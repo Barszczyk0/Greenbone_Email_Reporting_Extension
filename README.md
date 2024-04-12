@@ -1,1 +1,1 @@
-# Greenbone_Email_Reporting_Extension
+# Greenbone Email Reporting Extension
