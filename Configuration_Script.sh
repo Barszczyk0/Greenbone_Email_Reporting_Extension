@@ -52,12 +52,17 @@ welcome_menu
 IP=""
 RECIPIENT_EMAIL=""
 FINISH=0
-SCHEDULE=""
 MINUTE="0"
 HOUR="*"
 DAY_OF_MONTH="*"
 MONTH="*"
 DAY_OF_WEEK="*"
+SCHEDULE="0
+*
+*
+*
+*
+*"
 
 while true; do
         configuration_menu
