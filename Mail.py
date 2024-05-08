@@ -13,7 +13,7 @@ class Mail:
         smtp_server.sendmail(sender, recipients, msg.as_string())
         smtp_server.quit()
 
-    def create_msg(self, subject="Greenbone Raport", body="Raport", sender=None, recipients=None):
+    def create_msg(self, subject="Greenbone Report", body="Report", sender=None, recipients=None):
         print("[ℹ] - Creating email body")
         msg = MIMEMultipart()
         msg['Subject'] = subject
