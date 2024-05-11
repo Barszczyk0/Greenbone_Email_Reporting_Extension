@@ -49,12 +49,12 @@ IP=""
 RECIPIENT_EMAIL=""
 FINISH=0
 MINUTE="0"
-HOUR="*"
+HOUR="0"
 DAY_OF_MONTH="*"
 MONTH="*"
 DAY_OF_WEEK="*"
 SCHEDULE="0
-*
+0
 *
 *
 *
@@ -86,4 +86,12 @@ while true; do
     FINISH=0
 done
 
-# echo "$MINUTE $HOUR   $DAY_OF_MONTH $MONTH $DAY_OF_WEEK       root    /home/kali/Email_Reporting/test.sh" >> /etc/crontab
+dialog --title "Configuration" --yesno "Confirm scheduling scan\nHost: $IP\nRecipient email: $RECIPIENT_EMAIL\n" 8 50
+RESPONSE=$(sudo -u _gvm gvm-cli --gmp-username admin --gmp-password admin socket --xml "<create_target><name>Suspect Host $IP $(date +"%Y-%m-%d %H:%M:%S")</name><hosts>"$IP"</hosts><port_list id=\"33d0cd82-57c6-11e1-8ed1-406186ea4fc5\"/></create_target>")
+TARGET_ID=$(echo "$RESPONSE" | grep -oP 'id="\K[^"]+' | awk '{print $1}')
+sleep 3
+RESPONSE=$(sudo -u _gvm gvm-cli --gmp-username admin --gmp-password admin socket --xml "<create_task><name>Scan Suspect Host $IP</name><target id=\"$TARGET_ID\"/><config id=\"daba56c8-73ec-11df-a475-002264764cea\"/><scanner id=\"08b69003-5fc2-4037-a479-93b440211c73\"/></create_task>")
+TASK_ID=$(echo "$RESPONSE" | grep -oP 'id="\K[^"]+' | awk '{print $1}')
+echo "$MINUTE  $HOUR    $DAY_OF_MONTH $MONTH $DAY_OF_WEEK   root    /home/kali/Email_Reporting/ScanStarter.py $TASK_ID $RECIPIENT_EMAIL" >> /etc/crontab
+sleep 1
+dialog --title "Configuration" --msgbox "Scan was scheduled" 5 30
