@@ -1,16 +1,11 @@
-import smtplib
 from datetime import datetime
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.mime.application import MIMEApplication
 import gvm
 import os
 from gvm.protocols.latest import Gmp
-from gvm.xml import pretty_print
 from lxml import etree
 import base64
-import io
 import time
+import Mail
 
 
 class Greenbone:
@@ -34,7 +29,7 @@ class Greenbone:
     def create_target(self, ipaddress):
         with Gmp(connection=self.connection) as gmp:
             gmp.authenticate(username=self.username, password=self.password)
-            print(f"[ℹ] - Creating target")
+            print(f"[ℹ] - Creating target {ipaddress}")
             # create a unique name by adding the current datetime
             name = f"Suspect Host {ipaddress} {str(datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))}"
 
@@ -65,34 +60,19 @@ class Greenbone:
         return task_id
 
     def start_task(self, task_id):
+        print(f"[ℹ] - Starting task - {task_id}")
         with Gmp(connection=self.connection) as gmp:
             gmp.authenticate(username=self.username, password=self.password)
             response = gmp.start_task(task_id)
-        # the response is
-        # <start_task_response><report_id>id</report_id></start_task_response>
-        return response[0].text
+        root = etree.fromstring(response)
+        report_id = root.find('report_id').text
+        print(f"[✔] - Task started - {task_id}")
+        print(f"[ℹ] - Report ID - {report_id}")
+        return report_id
 
-    def get_task_id(self, task_name):
+    def download_report(self, report_id):
         with Gmp(connection=self.connection) as gmp:
             gmp.authenticate(username=self.username, password=self.password)
-            # Get task_id by task_name
-            response = gmp.get_tasks(filter_string=task_name)
-            root = etree.fromstring(response)
-            task_element = root.find('.//task')
-            task_id = task_element.get('id')
-            return task_id
-
-    def perform_task(self, task_id):
-        with Gmp(connection=self.connection) as gmp:
-            gmp.authenticate(username=self.username, password=self.password)
-            # Start task
-            response = gmp.start_task(task_id)
-            print("[ℹ] - Task information: " + response)
-
-            # Find report_id from response
-            root = etree.fromstring(response)
-            report_id = root.find('report_id').text
-
             # Check if scan is done
             scan_report = None
             try:
@@ -131,35 +111,45 @@ class Greenbone:
         except:
             print("[✘] - Error saving a report")
 
-    def test(self):
-        # Define task parameters
+    def get_task_id(self, task_name):
         with Gmp(connection=self.connection) as gmp:
             gmp.authenticate(username=self.username, password=self.password)
-            task_name = "MyScanTask"
-            target = "127.0.0.1"  # Example target, replace with your target
-            scan_config_id = "08b69003-5fc2-4037-a479-93b440211c73"  # Example scan config ID, replace with your config ID
-
-            # Create task
-            task = gmp.create_task(self.connection, name=task_name, target=target, config_id=scan_config_id)
-
-            # Start the task
-            task.start()
+            # Get task_id by task_name
+            response = gmp.get_tasks(filter_string=task_name)
+            root = etree.fromstring(response)
+            task_element = root.find('.//task')
+            task_id = task_element.get('id')
+            return task_id
 
 
-gb = Greenbone()
-# gb.perform_task(gb.get_task_id("HostDiscovery"))
-ipaddress = "10.0.2.15"
-gb.create_task(ipaddress, gb.create_target(ipaddress))
-
-# subject = "Email Subject"
-# body = "This is the body of the text message"
-# attachment_path = "./Reports/" + gb.get_report_filename()
+# if __name__ == "__main__":
+#     if len(sys.argv) == 1:
+#         task_id = sys.argv[1]
+#     else:
+#         print("No parameters passed.")
 #
-# sender = os.environ.get("SENDER_EMAIL")
-# recipients = os.environ.get("RECIPIENT_EMAIL")
-# password = os.environ.get("SENDER_EMAIL_PASSWORD")
-#
-# ml = Mail()
-# msg = ml.create_msg(subject, body, sender, recipients)
-# msg = ml.add_attachment(attachment_path, msg)
-# ml.send_email(sender, recipients, password, msg)
+#     gb = Greenbone()
+    # ipaddress = "10.0.2.15"
+    # target_id = gb.create_target(ipaddress)
+    # task_id = gb.create_task(ipaddress, target_id)
+    # report_id = gb.start_task(task_id)
+    # gb.download_report(report_id)
+    #
+    # task_id = gb.get_task_id("HostDiscovery")
+    # report_id = gb.start_task(task_id)
+    # gb.download_report(report_id)
+    #
+    #
+    # file_name = gb.get_report_filename()
+    # subject = "Greenbone Report"
+    # body = "Scan Report"
+    # attachment_path = "./Reports/" + file_name
+    #
+    # sender = ""
+    # recipients = [""]
+    # password = ""
+    #
+    # ml = Mail.Mail()
+    # msg = ml.create_msg(sender=sender, recipients=recipients)
+    # msg = ml.add_attachment(attachment_path, file_name, msg)
+    # ml.send_email(sender, recipients, password, msg)
