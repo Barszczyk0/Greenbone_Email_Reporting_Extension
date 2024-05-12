@@ -5,17 +5,15 @@ import Greenbone
 if __name__ == "__main__":
     task_id = None
     recipient_email = []
-    if len(sys.argv) == 2:
+    if len(sys.argv) == 3:
         task_id = sys.argv[1]
         recipient_email = [sys.argv[2]]
     else:
         print("No parameters passed.")
 
     gb = Greenbone.Greenbone()
-
     report_id = gb.start_task(task_id)
     gb.download_report(report_id)
-
     file_name = gb.get_report_filename()
 
     subject = "Greenbone Report"

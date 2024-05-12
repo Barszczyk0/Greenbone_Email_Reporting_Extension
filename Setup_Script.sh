@@ -71,7 +71,7 @@ while true; do
     DAY_OF_WEEK=$(echo "$SCHEDULE" | sed -n 5p)
 
     # Simple validation of provided IP, RECIPIENT_EMAIL and SCHEDULE information
-    echo "$IP" | grep -qE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' &&
+    echo "$IP" | grep -qE '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$' &&
         echo "$RECIPIENT_EMAIL" | grep -qE "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,10}\b" &&
         [[ $MINUTE = "*" || ($MINUTE -ge 0 && $MINUTE -le 59 && $MINUTE =~ ^[0-9]+$) ]] &&
         [[ $HOUR = "*" || ($HOUR -ge 0 && $HOUR -le 23 && $HOUR =~ ^[0-9]+$) ]] &&
@@ -92,6 +92,6 @@ TARGET_ID=$(echo "$RESPONSE" | grep -oP 'id="\K[^"]+' | awk '{print $1}')
 sleep 3
 RESPONSE=$(sudo -u _gvm gvm-cli --gmp-username admin --gmp-password admin socket --xml "<create_task><name>Scan Suspect Host $IP</name><target id=\"$TARGET_ID\"/><config id=\"daba56c8-73ec-11df-a475-002264764cea\"/><scanner id=\"08b69003-5fc2-4037-a479-93b440211c73\"/></create_task>")
 TASK_ID=$(echo "$RESPONSE" | grep -oP 'id="\K[^"]+' | awk '{print $1}')
-echo "$MINUTE  $HOUR    $DAY_OF_MONTH $MONTH $DAY_OF_WEEK   root    /home/kali/Email_Reporting/ScanStarter.py $TASK_ID $RECIPIENT_EMAIL" >> /etc/crontab
+echo "$MINUTE  $HOUR    $DAY_OF_MONTH $MONTH $DAY_OF_WEEK   root    python /home/kali/Email_Reporting/Scan_Starter.py $TASK_ID $RECIPIENT_EMAIL >> /home/kali/Email_Reporting/.scan_starter.log" >> /etc/crontab
 sleep 1
 dialog --title "Configuration" --msgbox "Scan was scheduled" 5 30

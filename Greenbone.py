@@ -12,7 +12,8 @@ class Greenbone:
 
     def __init__(self):
         try:
-            print("[ℹ] - Connecting to Greenbone")
+            time = str(datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+            print(f"[ℹ] - Connecting to Greenbone {time}")
             self.connection = gvm.connections.UnixSocketConnection(path='/run/gvmd/gvmd.sock')
         except Exception:
             print("[✘] - Connection to Greenbone failed")
@@ -88,7 +89,7 @@ class Greenbone:
                         break
                     else:
                         time.sleep(30)
-                    # get xml of pdf report
+                    # Get xml of pdf report
                     # c402cc3e-b531-11e1-9163-406186ea4fc5 is for pdf
                 scan_report = gmp.get_report(report_id, report_format_id='c402cc3e-b531-11e1-9163-406186ea4fc5')
             except Exception:
@@ -120,36 +121,3 @@ class Greenbone:
             task_element = root.find('.//task')
             task_id = task_element.get('id')
             return task_id
-
-
-# if __name__ == "__main__":
-#     if len(sys.argv) == 1:
-#         task_id = sys.argv[1]
-#     else:
-#         print("No parameters passed.")
-#
-#     gb = Greenbone()
-    # ipaddress = "10.0.2.15"
-    # target_id = gb.create_target(ipaddress)
-    # task_id = gb.create_task(ipaddress, target_id)
-    # report_id = gb.start_task(task_id)
-    # gb.download_report(report_id)
-    #
-    # task_id = gb.get_task_id("HostDiscovery")
-    # report_id = gb.start_task(task_id)
-    # gb.download_report(report_id)
-    #
-    #
-    # file_name = gb.get_report_filename()
-    # subject = "Greenbone Report"
-    # body = "Scan Report"
-    # attachment_path = "./Reports/" + file_name
-    #
-    # sender = ""
-    # recipients = [""]
-    # password = ""
-    #
-    # ml = Mail.Mail()
-    # msg = ml.create_msg(sender=sender, recipients=recipients)
-    # msg = ml.add_attachment(attachment_path, file_name, msg)
-    # ml.send_email(sender, recipients, password, msg)

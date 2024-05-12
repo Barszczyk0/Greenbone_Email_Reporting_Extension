@@ -32,20 +32,3 @@ class Mail:
         msg.attach(part)
         print("[✔] - Attachment created")
         return msg
-
-
-# subject = "Email Subject"
-# body = "This is the body of the text message"
-# attachment_path = "./Reports/" + "test.txt"
-# file_name = "test.txt"
-#
-# sender = ""
-# recipients = [""]
-# password = ""
-#
-#
-# ml = Mail()
-# msg = ml.create_msg(sender=sender, recipients=recipients)
-# msg = ml.add_attachment(attachment_path, file_name, msg)
-# ml.send_email(sender, recipients, password, msg)
-# print("[✔] - Email was sent")
