@@ -23,12 +23,12 @@ welcome_menu() {
 
 configuration_menu() {
     RESPONSE=$(dialog --title "Configuration" \
-        --menu "Configuration options:" 0 0 0 1 "Target IP" 2 "Email address" 3 "Schedule automatic scans" 4 "Finish" \
+        --menu "Configuration options:" 0 0 0 1 "Target IP or SUBNET" 2 "Email address" 3 "Schedule automatic scans" 4 "Finish" \
         3>&1 1>&2 2>&3 3>&-)
 
     case $RESPONSE in
     1)
-        IP=$(dialog --nocancel --inputbox "Please provide IP:" 10 60 "$IP" 3>&1 1>&2 2>&3 3>&-)
+        IP=$(dialog --nocancel --inputbox "Please provide IP or SUBNET:" 10 60 "$IP" 3>&1 1>&2 2>&3 3>&-)
         ;;
     2)
         RECIPIENT_EMAIL=$(dialog --nocancel --inputbox "Please provide recipient EMAIL:" 10 60 "$RECIPIENT_EMAIL" 3>&1 1>&2 2>&3 3>&-)
@@ -71,7 +71,7 @@ while true; do
     DAY_OF_WEEK=$(echo "$SCHEDULE" | sed -n 5p)
 
     # Simple validation of provided IP, RECIPIENT_EMAIL and SCHEDULE information
-    echo "$IP" | grep -qE '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$' &&
+    echo "$IP" | grep -qE '\b((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(\/(3[0-2]|[1-2]?[0-9]|[0-9]))?\b' &&
         echo "$RECIPIENT_EMAIL" | grep -qE "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,10}\b" &&
         [[ $MINUTE = "*" || ($MINUTE -ge 0 && $MINUTE -le 59 && $MINUTE =~ ^[0-9]+$) ]] &&
         [[ $HOUR = "*" || ($HOUR -ge 0 && $HOUR -le 23 && $HOUR =~ ^[0-9]+$) ]] &&
@@ -86,11 +86,11 @@ while true; do
     FINISH=0
 done
 
-dialog --title "Configuration" --yesno "Confirm scheduling scan\nHost: $IP\nRecipient email: $RECIPIENT_EMAIL\n" 8 50
-RESPONSE=$(sudo -u _gvm gvm-cli --gmp-username admin --gmp-password admin socket --xml "<create_target><name>Suspect Host $IP $(date +"%Y-%m-%d %H:%M:%S")</name><hosts>"$IP"</hosts><port_list id=\"33d0cd82-57c6-11e1-8ed1-406186ea4fc5\"/></create_target>")
+dialog --title "Configuration" --yesno "Confirm scheduling scan\nHost(s): $IP\nRecipient email: $RECIPIENT_EMAIL\n" 8 50
+RESPONSE=$(sudo -u _gvm gvm-cli --gmp-username admin --gmp-password admin socket --xml "<create_target><name>Suspect Host(s) $IP $(date +"%Y-%m-%d %H:%M:%S")</name><hosts>"$IP"</hosts><port_list id=\"33d0cd82-57c6-11e1-8ed1-406186ea4fc5\"/></create_target>")
 TARGET_ID=$(echo "$RESPONSE" | grep -oP 'id="\K[^"]+' | awk '{print $1}')
 sleep 3
-RESPONSE=$(sudo -u _gvm gvm-cli --gmp-username admin --gmp-password admin socket --xml "<create_task><name>Scan Suspect Host $IP</name><target id=\"$TARGET_ID\"/><config id=\"daba56c8-73ec-11df-a475-002264764cea\"/><scanner id=\"08b69003-5fc2-4037-a479-93b440211c73\"/></create_task>")
+RESPONSE=$(sudo -u _gvm gvm-cli --gmp-username admin --gmp-password admin socket --xml "<create_task><name>Scan Suspect Host(s) $IP</name><target id=\"$TARGET_ID\"/><config id=\"daba56c8-73ec-11df-a475-002264764cea\"/><scanner id=\"08b69003-5fc2-4037-a479-93b440211c73\"/></create_task>")
 TASK_ID=$(echo "$RESPONSE" | grep -oP 'id="\K[^"]+' | awk '{print $1}')
 echo "$MINUTE  $HOUR    $DAY_OF_MONTH $MONTH $DAY_OF_WEEK   root    python /home/kali/Email_Reporting/Scan_Starter.py $TASK_ID $RECIPIENT_EMAIL >> /home/kali/Email_Reporting/.scan_starter.log" >> /etc/crontab
 sleep 1
