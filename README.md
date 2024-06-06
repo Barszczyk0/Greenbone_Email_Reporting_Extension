@@ -4,7 +4,7 @@ This project allows to send emails with Greenbone scan reports. Please visit [de
 1. Install Greenbone in Kali Linux according to [Greenbone documentation](https://greenbone.github.io/docs/latest/index.html).
 2. Perform `git clone ...` in home directory.
 3. Ensure Greenbone is active by running `sudo gvm-start`.
-4. Modify Greenbone credentials in Setup_Script.sh.
+4. Modify Greenbone credentials in Setup_Script.sh and Greenbone.py.
 5. Provide credentials for email that would be used to send report in Scan_Starter.py
 6. Run the Setup_Script.sh
 
