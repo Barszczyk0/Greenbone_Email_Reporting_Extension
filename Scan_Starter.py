@@ -20,8 +20,8 @@ if __name__ == "__main__":
     body = "Scan Report"
     attachment_path = "./Reports/" + file_name
 
-    sender = ""
-    password = ""
+    sender = ""        # Configure sender email
+    password = ""      # Configure sender email password
 
     ml = Mail.Mail()
     msg = ml.create_msg(sender=sender, recipients=recipient_email)
