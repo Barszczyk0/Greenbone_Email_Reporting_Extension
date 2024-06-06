@@ -87,10 +87,10 @@ while true; do
 done
 
 dialog --title "Configuration" --yesno "Confirm scheduling scan\nHost(s): $IP\nRecipient email: $RECIPIENT_EMAIL\n" 8 50
-RESPONSE=$(sudo -u _gvm gvm-cli --gmp-username admin --gmp-password admin socket --xml "<create_target><name>Suspect Host(s) $IP $(date +"%Y-%m-%d %H:%M:%S")</name><hosts>"$IP"</hosts><port_list id=\"33d0cd82-57c6-11e1-8ed1-406186ea4fc5\"/></create_target>")
+RESPONSE=$(sudo -u _gvm gvm-cli --gmp-username admin --gmp-password admin socket --xml "<create_target><name>Suspect Host(s) $IP $(date +"%Y-%m-%d %H:%M:%S")</name><hosts>"$IP"</hosts><port_list id=\"33d0cd82-57c6-11e1-8ed1-406186ea4fc5\"/></create_target>")                                 # Configure Greenbone credentials
 TARGET_ID=$(echo "$RESPONSE" | grep -oP 'id="\K[^"]+' | awk '{print $1}')
 sleep 3
-RESPONSE=$(sudo -u _gvm gvm-cli --gmp-username admin --gmp-password admin socket --xml "<create_task><name>Scan Suspect Host(s) $IP</name><target id=\"$TARGET_ID\"/><config id=\"daba56c8-73ec-11df-a475-002264764cea\"/><scanner id=\"08b69003-5fc2-4037-a479-93b440211c73\"/></create_task>")
+RESPONSE=$(sudo -u _gvm gvm-cli --gmp-username admin --gmp-password admin socket --xml "<create_task><name>Scan Suspect Host(s) $IP</name><target id=\"$TARGET_ID\"/><config id=\"daba56c8-73ec-11df-a475-002264764cea\"/><scanner id=\"08b69003-5fc2-4037-a479-93b440211c73\"/></create_task>")   # Configure Greenbone credentials
 TASK_ID=$(echo "$RESPONSE" | grep -oP 'id="\K[^"]+' | awk '{print $1}')
 echo "$MINUTE  $HOUR    $DAY_OF_MONTH $MONTH $DAY_OF_WEEK   root    python /home/kali/Email_Reporting/Scan_Starter.py $TASK_ID $RECIPIENT_EMAIL >> /home/kali/Email_Reporting/.scan_starter.log" >> /etc/crontab
 sleep 1
