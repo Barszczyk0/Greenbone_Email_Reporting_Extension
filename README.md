@@ -9,7 +9,7 @@ This project allows to send emails with Greenbone scan reports. Please visit [de
 
 # Information about project components
 ## Setup_Script.sh
-Setup_Script.sh provides simple TUI (text user interface) to configure: Target IP or Subnet, recipient email and scheduling information. Program performs basic validation of provided values. If validation failes, scan won't be configured. After that the program creates target and task via `gvm-cli` - the returned Task ID (along with recipient's email address) is used to setup cronjob in `/etc/crontab/`.
+Setup_Script.sh provides simple TUI (text user interface) to configure: Target IP or Subnet, recipient's email and scheduling information. Program performs basic validation of provided values. If validation failes, scan won't be configured. After that the program creates target and task via `gvm-cli` - the returned Task ID (along with recipient's email address) is used to setup cronjob in `/etc/crontab/`.
 
 ## Scan_Starter.py
 Scan_Starter.py makes use of Greenbone.py and Mail.py in order to: start configured scan with provided Task ID, retrieve report, create email and send the email with the report to recipient.
