@@ -1,5 +1,5 @@
 # Greenbone Email Reporting Extension
-This project allows to send emails with Greenbone scan reports. 
+This project allows to send emails with Greenbone scan reports. Please visit [demo](/Screenshots_demo/DEMO.md) to check how application looks like.
 ## Setup
 1. Install Greenbone in Kali Linux according to [Greenbone documentation](https://greenbone.github.io/docs/latest/index.html).
 2. Perform `git clone ...` in home directory.
