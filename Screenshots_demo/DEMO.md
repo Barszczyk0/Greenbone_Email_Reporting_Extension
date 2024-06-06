@@ -1,5 +1,5 @@
 # Demostration of functionalities
-The following screenshosts presents how application (Setup_Script.sh) looks.
+The following screenshosts present how application (Setup_Script.sh) looks.
 
 |           ![](./welcome_menu.png)           |
 |:-------------------------------------------:| 
