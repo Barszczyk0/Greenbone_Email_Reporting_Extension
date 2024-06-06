@@ -12,3 +12,5 @@ The following screenshosts present how application (Setup_Script.sh) looks.
 |    *Recipient email configuration menu*     |
 |          ![](./schedule_menu.png)           |
 | *Scheduling information configuration menu* |
+|          ![](./confirm_menu.png)            |
+|            *Confirmation menu*              |
